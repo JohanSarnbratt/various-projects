@@ -23,12 +23,8 @@ object Main extends App {
     val endTime = System.nanoTime()
     println(s"Finished in ${(endTime-startTime)/1000.0/1000.0/1000.0}s")
   }
-  val hashmap = mutable.HashMap.empty[Int, Seq[Move]]
-  val useHash = false
   def solve(board: Board, countMoves: Int, record: Int, lastMove: Pos, startTime: Long): Int = {
     if (board.isSolved()) {
-      if (useHash)
-        hashmap.addOne((board.hash, Seq.empty))
       val endTime = System.nanoTime()
       println(s"Found new record of $countMoves in ${(endTime-startTime)/1000.0/1000.0/1000.0}s")
       println(board.moves)
@@ -40,27 +36,13 @@ object Main extends App {
     val moves = board.possibleMoves
     var newRecord = record
     moves.foreach((move: Move) => {
-      //board.validateMove(move, printIt = true)
       val newBoard = board.move(move)
-      //newBoard.printBoard()
       val newMove = if (lastMove.y != move.from.y || lastMove.x != move.from.x) 1 else 0
       val newVal = if (countMoves+newMove < newRecord) {
-        if (useHash && hashmap.contains(newBoard.hash)) {
-          //println("Took a shortcut")
-          val shortcutVal = countMoves + newMove + hashmap(newBoard.hash).length
-          if (shortcutVal<newRecord) {
-            val endTime = System.nanoTime()
-            println(s"Found new record of $shortcutVal in ${(endTime-startTime)/1000.0/1000.0/1000.0}s with a shortcut (shortcutlength: ${hashmap(newBoard.hash).length})")
-            println(board.moves++Seq(move)++hashmap(newBoard.hash))
-          }
-          shortcutVal
-        } else
-          solve(newBoard, countMoves+newMove, newRecord, move.to, startTime)
+        solve(newBoard, countMoves+newMove, newRecord, move.to, startTime)
       } else bigNumber
       if (newVal<newRecord) {
         newRecord = newVal
-        if (useHash)
-          hashmap.addOne((board.hash, Seq(move)++hashmap(newBoard.hash)))
       }
       newVal
     })
