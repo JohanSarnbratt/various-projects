@@ -1,3 +1,5 @@
+package trianglePeg
+
 import scala.collection.immutable.Seq
 
 object Boardie {
@@ -84,7 +86,7 @@ class Board(size: Int, val board: Seq[Seq[Boolean]], val moves: Seq[Move], oldPo
         ).filter(xxx => validateMove(xxx))
         keepFromOld ++ newMoves
     }
-  }
+  }//.sortBy(move => move.from.x+move.from.y)
   def isSolved(): Boolean = {
     board.flatten.count(x => x) == 1
   }
