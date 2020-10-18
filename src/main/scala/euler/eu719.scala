@@ -1,8 +1,6 @@
 package euler
 
-import euler.RichLong.PowerLong
-
-import scala.math.pow
+import euler.helpers.RichLong.PowerLong
 
 object eu719 {
   def run() = {
@@ -39,9 +37,4 @@ object eu719 {
     (1 until numberOfDigits).map(n => (s/(10**n), s%(10**n)))
   }
 
-}
-object RichLong {
-  implicit class PowerLong(i: Long) {
-    def ** (b: Long): Long = pow(i, b).longValue
-  }
 }
