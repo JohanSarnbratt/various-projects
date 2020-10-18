@@ -6,40 +6,37 @@ object eu141 {
   var setOfNums: Set[Long] = Set.empty
   def run() = {
     setOfNums = Set.empty
-    genProgressiveTriples
+    genProgressiveTriples()
     println("nums: " ++ setOfNums.toString)
     println("sum: " ++ setOfNums.sum.toString)
   }
-  val limit = 1000L*1000L*1000L*1000L
-  def genProgressiveTriples = {
-    var d: Long = 1
-    var q: Long = 2
-    def r: Long = q*q/d
-    while(r < limit) {
-      q = d+1
-      while(r < limit) {
-        if(properTriplet(d,q,r)) {
+  val limit: Long = 1000L*1000L*1000L*1000L
+  def genProgressiveTriples(): Unit = {
+    def z(x: Long, y: Long): Long = y*y/x
+    (1L to 1000L*1000L).foreach { x: Long =>
+      var y = x+1
+      while(z(x, y) < limit) {
+        if(properTriplet(x, y, z(x,y))) {
           //println(s"checking $d $q $r")
-          checkForSquares(d,q,r)
+          checkForSquares(x, y, z(x,y))
         }
-        q = q+1
+        y = y+1
       }
-      d = d+1
     }
   }
-  def properTriplet(small: Long, med: Long, big: Long) = {
+  def properTriplet(small: Long, med: Long, big: Long): Boolean = {
     if (small > med || med > big) {
       println(s"$small < $med < $big is false")
       throw new RuntimeException("")
     }
     small*big == med*med
   }
-  def checkForSquares(small: Long, med: Long, big: Long) = {
+  def checkForSquares(small: Long, med: Long, big: Long): Boolean = {
     //isSquare(small, med, big)
     isSquare(small, big, med)
     isSquare(big, med, small)
   }
-  def isSquare(d: Long, q: Long, r: Long) = {
+  def isSquare(d: Long, q: Long, r: Long): Boolean = {
     val n = d*q+r
     val yes = n < limit && scala.math.sqrt(n).intValue**2 == n
     if (yes) {
