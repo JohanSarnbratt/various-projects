@@ -1,7 +1,7 @@
 import scala.concurrent.duration.Duration
 
 object Main extends App {
-  gbghack2020.p2.run()
+  gbghack2020.p4.run()
 }
 
 /*
