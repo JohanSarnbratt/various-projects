@@ -4,7 +4,7 @@ import scala.collection.mutable
 import scala.util.Random
 
 class Board(balls: Int, colors: Int, duplicates: Int = 1, showSolutionAtStart: Boolean = true) {
-  private val solution: Seq[Int] = Board.generateRandomValid(balls, colors, duplicates)
+  private var solution: Seq[Int] = Board.generateRandomValid(balls, colors, duplicates)
   pr(solution, showSolutionAtStart)
   private var guesses: mutable.Seq[(Seq[Int], (Int, Int))] = mutable.Seq.empty
 
@@ -21,13 +21,18 @@ class Board(balls: Int, colors: Int, duplicates: Int = 1, showSolutionAtStart: B
 
   def getGuesses(): Seq[(Seq[Int], (Int, Int))] = guesses.toSeq
 
+  def setSolution(sol: Seq[Int]): Unit = {
+    require(sol.length == balls)
+    solution = sol
+  }
+
   private def pr(p: Any, show: Boolean = true): Unit = {
     if (show) println(p)
   }
 }
 
 object Board {
-  def generateRandomValid(balls: Int, colors: Int, duplicates: Int) = {
+  def generateRandomValid(balls: Int, colors: Int, duplicates: Int): Seq[Int] = {
     Seq.fill(duplicates)(0 until colors).flatten.sortBy(_ => Random.between(0.0,1.0)).take(balls)
   }
 }
