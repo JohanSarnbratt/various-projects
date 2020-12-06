@@ -15,4 +15,14 @@ object AocHelpers {
     }
     rows
   }
+
+  def readLines(fileName: String) = {
+
+    val bufferedSource = io.Source.fromFile(fileName)
+    var rows: Seq[String] = Seq()
+    for (line <- bufferedSource.getLines) {
+      rows = rows.appended(line)
+    }
+    rows
+  }
 }
