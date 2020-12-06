@@ -50,7 +50,7 @@ object Day3 {
             val x = (step*slope._1)%width
             val ind = y*width+x
             val treeHit = if (ind < data.length) {
-              println(s"$x $y $ind ${data(ind)}")
+              //println(s"$x $y $ind ${data(ind)}")
               lastCord = (x,y)
               data(ind) match {
                 case '#' => 1
@@ -65,7 +65,7 @@ object Day3 {
         trees
     }
     println(res)
-    println(res.product)
+    println(res.map(_.toLong).product)
   }
 
   val testData = """..##.......
