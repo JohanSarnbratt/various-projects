@@ -18,9 +18,16 @@ object Day5 {
       }
     )
     //part 1
-    println(res.max)
+    println(s"Part 1: ${res.max}")
     //part 2
-    println(res.sorted)
+    println(s"Part 2: ${findMissingElement(res.sorted)}")
+  }
+
+  def findMissingElement(list: Seq[Int]): Int = list match {
+    case x :: y :: _  if y-x != 1 =>
+      x + 1
+    case _ :: tail =>  findMissingElement(tail)
+    case _ => throw new RuntimeException("Did not find the missing element")
   }
 
   case class Pwobject(min: Int, max: Int, chr: Char, password: String)
