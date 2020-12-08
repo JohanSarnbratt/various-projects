@@ -32,10 +32,12 @@ object AocHelpers {
 
 class AssRunner(prog: Seq[(String, Int)]) {
   private var currentPosition = 0
-  private var program: mutable.Seq[(String, Int)] = mutable.Seq(prog: _*)
+  private val program: mutable.Seq[(String, Int)] = mutable.Seq(prog: _*)
   private var visitedPositions: mutable.Seq[Boolean] = program.map(_ => false)
   private var steps = 0
   private var accumulator = 0
+
+  def getVisitedPositions: mutable.Seq[Boolean] = visitedPositions
 
   def run(): AssRunner.State = {
     var state: AssRunner.State = AssRunner.Running

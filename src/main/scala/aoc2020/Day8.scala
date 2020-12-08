@@ -19,12 +19,14 @@ object Day8 {
     println(time(bruteForce(commands)))
     val visitedPositions: mutable.Seq[Boolean] = mutable.Seq(commands: _*).map(_ => false)
     println(time(grena(commands, visitedPositions)))
+    println(time(backwards(commands)))
   }
+
   def time[R](block: => R): R = {
     val t0 = System.nanoTime()
-    val result = block    // call-by-name
+    val result = block // call-by-name
     val t1 = System.nanoTime()
-    println("Elapsed time: " + (t1 - t0)/1000000.0 + "ms")
+    println("Elapsed time: " + (t1 - t0) / 1000000.0 + "ms")
     result
   }
 
@@ -121,11 +123,98 @@ object Day8 {
     }
   }
 
+  def backwards(commands: Seq[(String, Int)]) = {
+    val ar = new AssRunner(commands)
+    ar.run()
+    val infiniteLoop = ar.getVisitedPositions
+    val visitedPositions: mutable.Seq[Boolean] = mutable.Seq(commands: _*).map(_ => false)
+    val flipInd = grenaBak(commands, infiniteLoop, visitedPositions, commands.length)
+    val newCommands = commands.updated(flipInd, flipCommand(commands(flipInd)))
+    println(new AssRunner(newCommands).run())
+
+  }
+
+  def flipCommand(command: (String, Int)) =
+    command match {
+      case ("jmp", num) => ("nop", num)
+      case ("nop", num) => ("jmp", num)
+      case x => x
+    }
+
+  def grenaBak(commands: Seq[(String, Int)], infiniteLoop: mutable.Seq[Boolean], visitedPositions: mutable.Seq[Boolean], target: Int, redanGrenat: Boolean = false, changeIndex: Option[Int] = None): Int = {
+    if (target < infiniteLoop.length && infiniteLoop(target)) {
+      target
+    } else if (target < infiniteLoop.length && visitedPositions(target)) {
+      -1
+    } else {
+      val newVisitedPositions = visitedPositions
+      if (target < infiniteLoop.length) newVisitedPositions(target) = true
+
+      val candidatesToFollow = findCommandWithTarget(commands, target, target, redanGrenat)
+      val jumps = candidatesToFollow.map {
+        case (("nop", _), ind) if infiniteLoop(ind) =>
+          ind
+        case (("jmp", _), ind) =>
+          grenaBak(
+            commands,
+            infiniteLoop,
+            newVisitedPositions,
+            ind,
+            redanGrenat,
+            changeIndex
+          )
+        case _ => -1 //should never happen
+      }
+      val steps = if (target > 0) {
+        commands(target-1) match {
+          case ("nop", _) =>
+            grenaBak(
+              commands,
+              infiniteLoop,
+              newVisitedPositions,
+              target = target - 1,
+              redanGrenat = redanGrenat,
+              changeIndex
+            )
+          case ("acc", _) =>
+            grenaBak(
+              commands,
+              infiniteLoop,
+              newVisitedPositions,
+              target = target - 1,
+              redanGrenat,
+              changeIndex
+            )
+          case ("jmp", 1) =>
+            grenaBak(
+              commands,
+              infiniteLoop,
+              newVisitedPositions,
+              target = target - 1,
+              redanGrenat,
+              changeIndex
+            )
+          case ("jmp", num) if !redanGrenat && infiniteLoop(target-1) =>
+            target-1
+          case _ => -1 //should never happen
+        }
+      } else -1
+      jumps.appended(steps).maxOption.getOrElse(-1)
+    }
+  }
+
+  def findCommandWithTarget(commands: Seq[(String, Int)], targetLow: Int, targetHigh: Int, redanGrenat: Boolean) = {
+    commands.zipWithIndex.filter {
+      case (("nop", num), ind) if !redanGrenat && num + ind >= targetLow && num + ind <= targetHigh => true
+      case (("jmp", num), ind) if num + ind >= targetLow && num + ind <= targetHigh => true
+      case _ => false
+    }
+  }
+
   def parseLine(line: String): (String, Int) = {
     val bags = line.split(" ")
     (bags.head, Integer.parseInt(bags.last))
   }
-
 
 
 }
