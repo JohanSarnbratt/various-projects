@@ -8,7 +8,7 @@ class IntCodeRunner(prog: Seq[Int]) {
   private var steps = 0
   def run() = {
     while (step() == IntCodeRunner.Running) {}
-    println(s"Done: $program")
+    //println(s"Done: $program")
     program
   }
   def step(): IntCodeRunner.State = {
@@ -26,7 +26,7 @@ class IntCodeRunner(prog: Seq[Int]) {
         IntCodeRunner.Halted
       case cmd => throw IntCodeRunner.IntCodeException(s"Unknown intcode command: $cmd")
     }
-    println(program)
+    //println(program)
     res
   }
 }
