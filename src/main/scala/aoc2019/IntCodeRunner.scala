@@ -2,18 +2,21 @@ package aoc2019
 
 import scala.collection.mutable
 
-class IntCodeRunner(prog: Seq[Int], input: Seq[Int] = Seq.empty) {
+class IntCodeRunner(prog: Seq[Int]) {
+  private var input: Seq[Int] = Seq.empty
   private var inputIndex = 0
   private var currentPosition = 0
   private var program: mutable.Seq[Int] = mutable.Seq(prog: _*)
   private var output: Seq[Int] = Seq.empty[Int]
   private var steps = 0
-  def run() = {
-    while (step() == IntCodeRunner.Running) {}
-    //println(s"Done: $program")
-    program
+  def run(newInput: Seq[Int] = Seq.empty): IntCodeRunner.State = {
+    input = input ++ newInput
+    var status = step()
+    while (status == IntCodeRunner.Running) { status = step() }
+    status
   }
   def getOutput: Seq[Int] = output
+  def getProgram: mutable.Seq[Int] = program
   def step(): IntCodeRunner.State = {
     steps = steps + 1
     val (opCode, params) = parseOp(program(currentPosition))
@@ -33,10 +36,14 @@ class IntCodeRunner(prog: Seq[Int], input: Seq[Int] = Seq.empty) {
         currentPosition = currentPosition+4
         IntCodeRunner.Running
       case 3 => // input
-        program(program(currentPosition+1)) = input(inputIndex)
-        currentPosition = currentPosition+2
-        inputIndex = inputIndex + 1
-        IntCodeRunner.Running
+        if (inputIndex < input.length) {
+          program(program(currentPosition + 1)) = input(inputIndex)
+          currentPosition = currentPosition + 2
+          inputIndex = inputIndex + 1
+          IntCodeRunner.Running
+        } else {
+          IntCodeRunner.NeedInput
+        }
       case 4 => //output
         output = output.appended(getVal(1))
         currentPosition = currentPosition+2
@@ -93,6 +100,8 @@ object IntCodeRunner {
   case object Running extends State
 
   case object Halted extends State
+
+  case object NeedInput extends State
 
   case class IntCodeException(msg: String) extends RuntimeException(msg: String)
 }
