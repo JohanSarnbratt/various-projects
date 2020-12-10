@@ -1,7 +1,5 @@
 package aoc2019
 
-import scala._
-
 object Day2 {
   def run() = {
     println(new IntCodeRunner(Seq(1, 9, 10, 3, 2, 3, 11, 0, 99, 30, 40, 50)).run() == Seq(3500, 9, 10, 70, 2, 3, 11, 0, 99, 30, 40, 50))
