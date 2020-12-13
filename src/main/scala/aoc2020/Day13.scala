@@ -39,8 +39,8 @@ object Day13 {
         val newId = bus1*bus2
         var i1 = 0L
         var i2 = 0L
-        def bus1Time = i1*bus1 - offsets1
-        def bus2Time = i2*bus2 - offsets2
+        def bus1Time = i1*bus1 + offsets1
+        def bus2Time = i2*bus2 + offsets2
         while (bus1Time != bus2Time) {
           if (bus1Time < bus2Time) {
             i1 = i1 + Math.max((bus2Time - bus1Time)/bus1, 1)
@@ -54,7 +54,7 @@ object Day13 {
         r
     }
     //println(timestamp2)
-    val t = res._2
+    val t = res._1-res._2
     //println(t)
     //println(timestamp2.zipWithIndex.map{case (maybeBus, ind) => maybeBus.map((t+ind.toLong) % _)})
     //println(timestamp2.zipWithIndex.map{case (maybeBus, ind) => maybeBus.map((1068781+ind.toLong) % _)})
