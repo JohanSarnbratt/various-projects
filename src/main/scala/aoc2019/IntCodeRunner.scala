@@ -9,6 +9,7 @@ class IntCodeRunner(prog: Seq[Long]) {
   private var program: mutable.Seq[Long] = mutable.Seq(prog: _*)
   private var output: Seq[Long] = Seq.empty[Long]
   private var steps = 0
+  private var relativeBase = 0
   def run(newInput: Seq[Long] = Seq.empty): IntCodeRunner.State = {
     input = input ++ newInput
     var status = step()
@@ -22,13 +23,33 @@ class IntCodeRunner(prog: Seq[Long]) {
     val (opCode, params) = parseOp(program(currentPosition).toInt)
     def getVal(offset: Int): Long = {
       params(offset-1) match {
-        case 0 => program(program(currentPosition+offset).toInt)
-        case 1 => program(currentPosition+offset)
+        case 0 =>
+          assertAddressExists(currentPosition+offset)
+          val address = program(currentPosition+offset).toInt
+          assertAddressExists(address)
+          program(address)
+        case 1 =>
+          assertAddressExists(currentPosition+offset)
+          program(currentPosition+offset)
+        case 2 =>
+          assertAddressExists(currentPosition+offset)
+          val address = relativeBase+program(currentPosition+offset).toInt
+          assertAddressExists(address)
+          program(address)
       }
     }
     def setVal(offset: Int, value: Long): Unit = {
       params(offset-1) match {
-        case 0 => program(program(currentPosition+offset).toInt) = value
+        case 0 =>
+          assertAddressExists(currentPosition+offset)
+          val address = program(currentPosition+offset).toInt
+          assertAddressExists(address)
+          program(address) = value
+        case 2 =>
+          assertAddressExists(currentPosition+offset)
+          val address = relativeBase+program(currentPosition+offset).toInt
+          assertAddressExists(address)
+          program(address) = value
       }
     }
     val res = opCode match {
@@ -79,6 +100,10 @@ class IntCodeRunner(prog: Seq[Long]) {
           setVal(offset = 3, value = 0)
         currentPosition = currentPosition+4
         IntCodeRunner.Running
+      case 9 => // adjust relative base
+        relativeBase = relativeBase + getVal(1).toInt
+        currentPosition = currentPosition+2
+        IntCodeRunner.Running
       case 99 =>
         IntCodeRunner.Halted
       case cmd => throw IntCodeRunner.IntCodeException(s"Unknown intcode command: $cmd program: $program current: $currentPosition")
@@ -90,6 +115,10 @@ class IntCodeRunner(prog: Seq[Long]) {
     val opCode = op%100
     val params = Seq((op/100) % 10, (op/1000) % 10, (op/10000) % 10)
     (opCode, params)
+  }
+  def assertAddressExists(address: Int) = {
+    if (address >= program.length)
+      program = program ++ mutable.Seq.fill(address - program.length + 1)(0)
   }
 }
 
