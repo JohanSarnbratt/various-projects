@@ -33,7 +33,7 @@ object Day13 {
     }.map{
       case (Some(bus), ind) => (bus, ind.toLong)
     }
-    val res: (Long, Long) = busesWithOffset.tail.fold(busesWithOffset.head) {
+    val res: (Long, Long) = busesWithOffset.reduce[(Long, Long)] {
       case ((bus1, offsets1), (bus2, offsets2)) =>
         //println((bus1, offsets1), (bus2, offsets2))
         val newId = bus1*bus2
