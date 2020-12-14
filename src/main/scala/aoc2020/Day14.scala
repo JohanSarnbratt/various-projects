@@ -11,7 +11,7 @@ object Day14 {
     masker.run()
     println(masker.getMemory.take(10))
     println(masker.getMemory.sum)
-    val data2 = AocHelpers.readLines("/Users/johansarnbratt/personal/trianglepeg/src/main/scala/aoc2020/data14test2")
+    val data2 = AocHelpers.readLines("/Users/johansarnbratt/personal/trianglepeg/src/main/scala/aoc2020/data14")
     val program2: Seq[(String, String)] = data2.map(_.split(" = ")).map(arr => (arr.head, arr(1)))
     val masker2 = new Masker2(program2)
     masker2.run()
@@ -78,15 +78,19 @@ class Masker2(prog: Seq[(String, String)]) {
       ind =>
         println(ind.toBinaryString)
         var i = ind
-        fullBinary.zip(mask).map {
-          case (a, 'X') =>
+        val res = fullBinary.zip(mask).map {
+          case (_, 'X') =>
+            val r = (i%2).toString.head
             i = i/2
-            (i%2).toChar
+            r
+
           case (a, '0') =>
             a
-          case (a, '1') =>
+          case (_, '1') =>
             '1'
-        }.asInstanceOf[String]
+        }.mkString
+        println(s"res.length: ${res.length}")
+        res
     }
   }
 }
