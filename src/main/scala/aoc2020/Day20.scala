@@ -3,12 +3,19 @@ package aoc2020
 object Day20 {
   def run(): Unit = {
     val testStartPieces = part1("/Users/johansarnbratt/personal/trianglepeg/src/main/scala/aoc2020/data20test")
-    //val startPiece = part1("/Users/johansarnbratt/personal/trianglepeg/src/main/scala/aoc2020/data20")
+    val startPiece = part1("/Users/johansarnbratt/personal/trianglepeg/src/main/scala/aoc2020/data20")
     part2("/Users/johansarnbratt/personal/trianglepeg/src/main/scala/aoc2020/data20test", testStartPieces.head)
-    part2("/Users/johansarnbratt/personal/trianglepeg/src/main/scala/aoc2020/data20test", testStartPieces(1))
-    part2("/Users/johansarnbratt/personal/trianglepeg/src/main/scala/aoc2020/data20test", testStartPieces(2))
-    part2("/Users/johansarnbratt/personal/trianglepeg/src/main/scala/aoc2020/data20test", testStartPieces(3))
-    //part2("/Users/johansarnbratt/personal/trianglepeg/src/main/scala/aoc2020/data20", startPiece)
+    //part2("/Users/johansarnbratt/personal/trianglepeg/src/main/scala/aoc2020/data20test", testStartPieces(1))
+    //part2("/Users/johansarnbratt/personal/trianglepeg/src/main/scala/aoc2020/data20test", testStartPieces(2))
+    //part2("/Users/johansarnbratt/personal/trianglepeg/src/main/scala/aoc2020/data20test", testStartPieces(3))
+    part2("/Users/johansarnbratt/personal/trianglepeg/src/main/scala/aoc2020/data20", startPiece.head)
+    part2("/Users/johansarnbratt/personal/trianglepeg/src/main/scala/aoc2020/data20", startPiece(1))
+    part2("/Users/johansarnbratt/personal/trianglepeg/src/main/scala/aoc2020/data20", startPiece(2))
+    part2("/Users/johansarnbratt/personal/trianglepeg/src/main/scala/aoc2020/data20", startPiece(3))
+    part2("/Users/johansarnbratt/personal/trianglepeg/src/main/scala/aoc2020/data20", startPiece.head, true)
+    part2("/Users/johansarnbratt/personal/trianglepeg/src/main/scala/aoc2020/data20", startPiece(1), true)
+    part2("/Users/johansarnbratt/personal/trianglepeg/src/main/scala/aoc2020/data20", startPiece(2), true)
+    part2("/Users/johansarnbratt/personal/trianglepeg/src/main/scala/aoc2020/data20", startPiece(3), true)
   }
 
   def part1(fileName: String): Seq[Int] = {
@@ -27,7 +34,7 @@ object Day20 {
     println(s"part1: ${cornerPieces.keys.map(_.toLong).product}")
     cornerPieces.keys.toSeq
   }
-  def part2(fileName: String, startPieceName: Int): Unit = {
+  def part2(fileName: String, startPieceName: Int, mirror: Boolean = false): Unit = {
     val data: Seq[Seq[String]] = AocHelpers.readDataGroupsSeparatedByBlankLines(fileName)
     val edgeNumbers: Seq[Int] = getMinEdgeNumbers(data)
     val pieces: Seq[Piece] = data.map {
@@ -47,7 +54,8 @@ object Day20 {
     //val piecesAlongOneEdge: Int = (Math.sqrt(pieces.length)+0.5).toInt
     //val board: Seq[Seq[Option[Piece]]] = Seq.fill(piecesAlongOneEdge)(Seq.fill(piecesAlongOneEdge)(None))
     //find orientation of startPiece
-    val startPiece = pieces.find(_.name == startPieceName).get.mirror()
+    val startPiece = if (mirror) pieces.find(_.name == startPieceName).get.mirror()
+    else pieces.find(_.name == startPieceName).get
     val startPieceEdgeNum = getEdgesFromPiece(startPiece.image).map(getMinNumFromEdge)
     val distinctness = startPieceEdgeNum.map(en => edgeNumbers.count(en == _))
     //println(distinctness)
@@ -57,10 +65,50 @@ object Day20 {
       case Seq(2,2,1,1) => startPiece.rotate(2)
       case Seq(1,2,2,1) => startPiece.rotate(3)
     }
-    val firstRow = buildRow(rotatedStartPiece, pieces, edgeMap, 0)
-    println(firstRow.map(_.name))
-    //TODO can build first row of puzzle so far
-    // next step: find first piece in next row, repeat rowbuilding with that piece
+    val board = buildBoard(rotatedStartPiece, pieces, edgeMap, 0)
+    //printBoard(board)
+    //println(board.map(_.map(_.name)).mkString("\n"))
+    val boardNoEdges = board.map(_.map(_.removeEdges()))
+    //printBoard(boardNoEdges)
+    val image = mergeBoard(boardNoEdges).map(_.mkString(""))
+    //println(image.mkString("\n"))
+    //println(image.mkString("\n").count(_ == '#'))
+    val monsters = findSeaMonster(image)
+    println(image.mkString("\n").count(_ == '#')-monsters*15)
+  }
+  val seaMonster = "                  # #    ##    ##    ### #  #  #  #  #  #   "
+  val seaMonsterLength = seaMonster.length/3
+  val seaMonsterSize = seaMonster.count(_ == '#')
+  val sminds = seaMonster.zipWithIndex.filter(_._1 == '#').map(_._2)
+  val smcoords = sminds.map(smi => (smi%seaMonsterLength,smi/seaMonsterLength))
+  def findSeaMonster(image: Seq[String]) = {
+    (0 to image.head.length-seaMonsterLength).map{x =>
+      (0 to image.head.length-3).count{y =>
+        smcoords.forall{case (sx,sy) => image(y+sy)(x+sx) == '#'}
+      }
+    }.sum
+  }
+  def mergeBoard(board: Seq[Seq[Piece]]) = {
+    board.flatMap{
+      row => row.head.image.indices.map(i => row.flatMap(_.image(i)))
+    }
+  }
+  def printBoard(board: Seq[Seq[Piece]]) = {
+    board.foreach{row =>
+      printRow(row)
+      println("")
+    }
+  }
+  def printRow(pieces: Seq[Piece]) = {
+    pieces.head.image.indices.foreach{ ind =>
+      println(pieces.map(_.image(ind)).mkString(" "))
+    }
+  }
+  def buildBoard(startPiece: Piece, pieces: Seq[Piece], edgeMap: Seq[(String, (Int, Int))], depth: Int): Seq[Seq[Piece]] = {
+    val firstColumn = buildRow(startPiece.mirror().rotate(1), pieces, edgeMap, 0)
+    firstColumn.map{
+      piece => buildRow(piece.mirror().rotate(1), pieces, edgeMap, 0)
+    }
   }
 
   /**
@@ -69,9 +117,6 @@ object Day20 {
   def buildRow(startPiece: Piece, pieces: Seq[Piece], edgeMap: Seq[(String, (Int, Int))], depth: Int): Seq[Piece] = {
     //println(startPiece.name)
     //startPiece.pretty()
-    if (depth > 4)
-      Seq(startPiece)
-    else
       Seq(startPiece) ++ findToRight(startPiece: Piece, pieces, edgeMap).map {
         piece => buildRow(piece, pieces, edgeMap, depth+1)
       }.getOrElse(Seq.empty)
@@ -83,15 +128,9 @@ object Day20 {
    */
   def findToRight(startPiece: Piece, pieces: Seq[Piece], edgeMap: Seq[(String, (Int, Int))]): Option[Piece] = {
     val rightEdge: String = getEdgesFromPiece(startPiece.image)(2).reverse
-    /*println()
-    println(rightEdge)
-    println()
-    println(getEdgesFromPiece(startPiece.image))
-    println()*/
     findMatchingEdge(rightEdge, startPiece.name, edgeMap).map {
       case (pieceName, orientation) =>
         val piece = pieces.find(_.name == pieceName).get
-        println(orientation)
         orientation match {
           case 0 => piece
           case 1 => piece.rotate(1)
@@ -142,6 +181,9 @@ object Day20 {
     def mirror(): Piece = Piece(name, image.map(_.reverse))
     def pretty() = {
       image.foreach(println(_))
+    }
+    def removeEdges() = {
+      Piece(name, image.tail.dropRight(1).map(_.tail.dropRight(1)))
     }
   }
   def getMinEdgeNumbers(data: Seq[Seq[String]]): Seq[Int] = {
