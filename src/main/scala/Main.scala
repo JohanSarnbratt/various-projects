@@ -2,9 +2,9 @@
 import scala.concurrent.duration.Duration
 
 object Main extends App {
-  gbghack2020.p4.run()
+  //gbghack2020.p4.run()
   //mastermind.mAIstermind.run()
-  //aoc2020.Day20.run()
+  aoc2020.Day22.run()
   //aoc2019.Day9.run()
 }
 
