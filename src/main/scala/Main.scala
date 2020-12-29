@@ -5,7 +5,7 @@ object Main extends App {
   //gbghack2020.p4.run()
   //mastermind.mAIstermind.run()
   //aoc2020.Day24.run()
-  aoc2019.Day1.run()
+  aoc2019.Day3.run()
 }
 
 /*
