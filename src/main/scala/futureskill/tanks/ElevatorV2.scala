@@ -1,28 +1,32 @@
 package futureskill.tanks
-import elevator._
+import futureskill.tanks.elevator._
 
 /**
- * v1
- * basic elevator algorithm
+ * v2
+ * basic elevator algorithm with greedy meta goUp as first move to get cheap passengers
  *
- * rating: 1238
- * place: 13/49
- * test score: 69-71
+ * rating: 1283, 1282
+ * place:  6/53, 6/56
+ * test score: 71-76
  */
-class SolutionV1 extends SolutionInterface {
+class ElevatorV2 extends SolutionInterface {
   // You can initiate and calculate things here
   var onTheWayUp = true
   var pickUpPassengers = true
   var currentFloor = 0
   val totalFloors = API.getFloorCount()
   var handledDoor = false
+  var firstMove = true
 
   /**
    * Executes a single step of the elevators programming. This is where you would
    * typically call all API functions.
    */
   def update(): Unit = {
-    if (!handledDoor) {
+    if (firstMove) {
+      firstMove = false
+      goUp()
+    } else if (!handledDoor) {
       val tookAction = handleDoor()
       if (!tookAction)
         moveFloor()
