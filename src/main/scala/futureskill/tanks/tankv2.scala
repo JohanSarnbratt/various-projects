@@ -14,7 +14,7 @@ import tanks._
  *
  * total: 5963 if we change line 97 to:       } else if ((goodTurns*2 >= badTurns || ticks-tickWhenCheckedoutUnknowBlock>5) && seeing(2)._1.getClass.getSimpleName == "UnknownBlock") {
  */
-class Solution {
+class Solution1 {
   val mapSize: Int = 42
   val map: mutable.Seq[mutable.Seq[Tile]] = mutable.Seq.fill(mapSize)(mutable.Seq.fill[Tile](mapSize)(Unknown))
   sealed trait Tile

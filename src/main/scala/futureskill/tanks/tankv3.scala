@@ -5,7 +5,7 @@ import tanks._
 score 8649
  */
 import scala.collection.mutable
-class Solution extends SolutionInterface {
+class Solution3 extends SolutionInterface {
   val mapSize: Int = 42
   val map: mutable.Seq[mutable.Seq[Tile]] = mutable.Seq.fill(mapSize)(mutable.Seq.fill[Tile](mapSize)(Unknown))
   sealed trait Tile {

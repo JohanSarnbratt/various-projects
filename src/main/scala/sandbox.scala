@@ -1,4 +1,4 @@
-
+/*
 trait Api {
   def identifyTarget(): Boolean
   def fireCannon(): Unit
@@ -167,6 +167,7 @@ class Solution {
   }
   def getDirVec(direction: Int): (Int, Int) = Seq((0,1),(-1,0),(0,-1),(1,0))(direction)
 }
+/*
 Name	Score	Time
 short time between checking out unknown
   Level 1 :: Target practice	531	2,883.00 ms
@@ -192,7 +193,7 @@ Level 1 :: Target practice	342	969.00 ms
   Level 2 :: First contact	477	815.00 ms
   Level 3 :: Invasion	1637	722.00 ms
   Level 4 :: Hide and seek	2551	978.00 ms
-
+  */
 import scala.collection.mutable
 
 class Solution2 {
@@ -364,3 +365,5 @@ class Solution2 {
   }
   def getDirVec(direction: Int): (Int, Int) = Seq((0,1),(-1,0),(0,-1),(1,0))(direction)
 }
+
+ */
