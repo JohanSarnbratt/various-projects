@@ -7,11 +7,11 @@ import scala.collection.immutable
 object Day3 {
   def run(): Unit = {
     val testData = AocHelpers.readDataGroupsSeparatedByBlankLines("/Users/johansarnbratt/personal/trianglepeg/src/main/scala/aoc2019/data3test")
+    val data = AocHelpers.readLines("/Users/johansarnbratt/personal/trianglepeg/src/main/scala/aoc2019/data3")
 
     println("Test 1: ")
     testData.foreach(part1)
     println("Part 1: ")
-    val data = AocHelpers.readLines("/Users/johansarnbratt/personal/trianglepeg/src/main/scala/aoc2019/data3")
     part1(data)
     println("Test 2: ")
     testData.foreach(part2)
