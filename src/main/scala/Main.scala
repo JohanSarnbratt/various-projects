@@ -6,7 +6,8 @@ object Main extends App {
   //mastermind.mAIstermind.run()
   //aoc2020.Day24.run()
   //aoc2019.Day8.run()
-  euler.eu152.run()
+  //euler.eu700.run2(4765, 0)
+  euler.eu141.run3()
 }
 
 /*

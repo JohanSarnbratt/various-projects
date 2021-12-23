@@ -39,9 +39,27 @@ object eu152 {
     println(s"calls: ${calls.zipWithIndex}")
     println(s"sum calls: ${calls.sum}")
   }
+
   def abs(int: BigInt) = if (int < 0) -int else int
 
   def f(n: Int) = lcm80sq / (n * n)
 
   def restSum(n: Int, max: Int): BigInt = (n to max).map(f).sum
+
+  def run2() = {
+    val max = 45
+    val terms = 10
+    val minVal = f(max)
+    val restSums = (2 to max).map(m => restSum(m, max))
+    //println(lcm80sq)
+    //restSums.map(println)
+    val fs = (2 to max).map(f)
+    val calls = mutable.Seq.fill(max+5)(0)
+
+
+    println("Starting...")
+    val t = System.nanoTime()
+    val noOfSolutions = (target, Nil, 2)
+    println((System.nanoTime()-t)/1000000000.0)
+  }
 }
